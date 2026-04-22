@@ -1,7 +1,6 @@
 import { AgentBrowser } from "@mastra/agent-browser";
 import { Agent } from "@mastra/core/agent";
 import { Workspace, LocalFilesystem } from "@mastra/core/workspace";
-import { browserScreenshotTool } from "../tools/browser_screenshot";
 
 if (!process.env.SCREENSHOT_PATH) {
 	throw new Error("SCREENSHOT_PATH environment variable is not set");
@@ -13,17 +12,11 @@ export const workspace = new Workspace({
 	}),
 });
 
-export const browser = new AgentBrowser({
-	headless: false,
-});
-
 export const carnivoreAgent = new Agent({
 	id: "carnivore-agent",
 	name: "Carnivore agent",
 	instructions: `You are helpful deal finder, you goal is to find deals for carnivore diet people. Aka like eggs on discount and meats`,
 	model: "openai/gpt-5-mini",
-	tools: { browserScreenshotTool: browserScreenshotTool(browser) },
-	browser,
 	workspace,
 });
 
