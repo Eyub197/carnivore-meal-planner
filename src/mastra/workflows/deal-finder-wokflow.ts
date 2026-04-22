@@ -1,0 +1,42 @@
+import { createStep, createWorkflow } from "@mastra/core/workflows";
+import { z } from "zod";
+import { carnivoreAgent } from "../agents/carnivore-agent";
+
+export const findDealsFromPDFS = createStep({
+	id: "find-deals-from-pdfs",
+	description:
+		"It takes an array of pdfs paths. It finds those pdfs and then it extracts deals from it.",
+	inputSchema: z.object({}),
+	outputSchema: z.void(),
+
+	execute: async () => {
+		const arrayOfPaths: string[] = [
+			"./lib/broshura-0.pdf",
+			"./lib/broshura-1.pdf",
+		];
+		console.log(process.cwd());
+		for (const path of arrayOfPaths) {
+			const response =
+				await carnivoreAgent.generate(`You have this workspace-relative PDF path: ${path}.
+Read the PDF and use your create file tool to create a new markdown file in ./deals/.
+Name the output file after the PDF name.
+
+Extract all carnivore-relevant deals you find and format them like this:
+foodName: "name",
+price: "price",
+proteinToFatRation: alotMoreProtien | moreProtein | in middle | moreFat | A lot more Fat
+			`);
+
+			console.log(response.text);
+		}
+	},
+});
+
+export const mainWorkflow = createWorkflow({
+	id: "deal-finder-workflow",
+	description: "The workflow that finds deals from pdfs",
+	inputSchema: z.object({}),
+	outputSchema: z.void(),
+})
+	.then(findDealsFromPDFS)
+	.commit();

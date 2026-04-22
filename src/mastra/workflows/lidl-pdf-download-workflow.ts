@@ -1,7 +1,9 @@
 import { createWorkflow } from "@mastra/core/workflows";
 import { createStep } from "@mastra/core/workflows/evented";
 import { chromium } from "playwright";
+import { factory } from "typescript";
 import { z } from "zod";
+import { writeFile } from "node:fs/promises";
 
 const getActiveLinkPages = createStep({
 	id: "get-lidl-broshure-page",
@@ -32,21 +34,25 @@ const downloadBroshurePdfs = createStep({
 
 	execute: async ({ inputData: { urls } }) => {
 		const paths: string[] = [];
-		const browser = await chromium.launch();
+		const browser = await chromium.launch({ headless: false });
 		try {
 			for (const [index, url] of urls.entries()) {
 				const page = await browser.newPage();
 				await page.goto(url);
 
+				await page.waitForSelector("text='ПРИЕМАНЕ'", { timeout: 4000 });
 				if (await page.locator("text='ПРИЕМАНЕ'").isVisible()) {
 					await page.click("text='ПРИЕМАНЕ'");
 				}
-				// maybe fix the download stuff. Idk
 				await page.click('[aria-label="Меню"]');
-				const download = await page.waitForEvent("download");
 				await page.click('text="Свали PDF"');
-				await download.saveAs(`./lib/broshura-${index}.pdf`);
-				paths.push(`./lib/broshura-${index}.pdf`);
+				const popup = await page.waitForEvent("popup");
+				const urlPdf = popup.url();
+				const pdf = await fetch(urlPdf);
+				const buffer = await pdf.arrayBuffer();
+				const path = `lib/broshura-${index}.pdf`;
+				await writeFile(path, Buffer.from(buffer));
+				paths.push(`./public/${path}`);
 			}
 		} catch (error) {
 			console.error(error);

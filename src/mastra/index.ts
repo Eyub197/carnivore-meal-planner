@@ -1,8 +1,8 @@
 import { Mastra } from "@mastra/core/mastra";
 import { carnivoreAgent } from "./agents/carnivore-agent";
-import { testWorkflow } from "./workflows/lidl-pdf-download-workflow";
+import { mainWorkflow } from "./workflows/deal-finder-wokflow";
 
 export const mastra = new Mastra({
 	agents: { carnivoreAgent },
-	workflows: { testWorkflow },
+	workflows: { mainWorkflow },
 });
