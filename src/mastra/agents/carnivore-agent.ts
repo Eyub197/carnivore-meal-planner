@@ -1,6 +1,7 @@
 import { AgentBrowser } from "@mastra/agent-browser";
 import { Agent } from "@mastra/core/agent";
 import { Workspace, LocalFilesystem } from "@mastra/core/workspace";
+import { browserScreenshotTool } from "../tools/browser_screenshot";
 
 if (!process.env.SCREENSHOT_PATH) {
 	throw new Error("SCREENSHOT_PATH environment variable is not set");
@@ -21,7 +22,9 @@ export const carnivoreAgent = new Agent({
 	name: "Carnivore agent",
 	instructions: `You are helpful deal finder, you goal is to find deals for carnivore diet people. Aka like eggs on discount and meats`,
 	model: "openai/gpt-5-mini",
+	tools: { browserScreenshotTool: browserScreenshotTool(browser) },
 	browser,
 	workspace,
 });
+
 // Instrutciontns to be added when someome tells you open a webPage use the browser goto tool and then other like that to
