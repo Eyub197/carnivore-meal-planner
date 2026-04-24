@@ -1,30 +1,45 @@
-# carnivore-agent
+# Carnivore Deal Finder
 
-Welcome to your new [Mastra](https://mastra.ai/) project! We're excited to see what you'll build.
+Built by [Eyub197](https://github.com/Eyub197)
 
-## Getting Started
+I saw Mastra and something clicked — I had to build with it. This is the result: a tool that scrapes the Lidl Bulgaria weekly brochure, finds deals relevant to a carnivore diet, and generates a weekly meal plan based on your macro targets.
 
-Start the development server:
+## What it does
 
-```shell
-bun run dev
+1. Scrapes lidl.bg for the current week's brochure links
+2. Downloads the PDFs using headless Playwright
+3. Extracts text from the PDFs and passes it to an AI agent
+4. The agent filters for carnivore-relevant deals (meats, eggs — no dairy, no breaded stuff)
+5. A second agent takes those deals and builds a 7-day meal plan hitting ~1900 kcal/day, 185g protein, max 15g carbs
+6. A minimal frontend serves the meal plan in the browser
+
+## Technologies used
+
+- **Mastra** — workflow orchestration and AI agent framework
+- **Playwright** — headless browser automation for scraping and PDF downloading
+- **pdf-parse** — PDF text extraction
+- **Bun** — runtime, package manager, and HTTP server
+- **Zod** — input/output schema validation across workflow steps
+- **OpenAI / Google Gemini** — LLM backends for the agents
+
+## What I learned
+
+- How Mastra's input/output schemas chain between workflow steps — if a step returns `void`, the next step gets `undefined` and the whole thing breaks
+- Playwright behaves differently in headless vs headed mode — PDF downloads trigger a `download` event in headless, but open a new tab in headed
+- Passing file content directly in the prompt is far more reliable than letting the agent read files itself via tools
+- `Promise.all` isn't just for parallelism — registering an event listener before triggering the action that fires it is a real pattern
+
+## Getting started
+
+```sh
+bun install
+bun run dev        # starts Mastra at http://localhost:4111
+bun src/server.ts  # starts the frontend at http://localhost:8080
 ```
 
-Open [http://localhost:4111](http://localhost:4111) in your browser to access [Mastra Studio](https://mastra.ai/docs/studio/overview). It provides an interactive UI for building and testing your agents, along with a REST API that exposes your Mastra application as a local service. This lets you start building without worrying about integration right away.
+Set `FOLDER_PATH` in your `.env` to the absolute path of `src/mastra/public/`.
 
-You can start editing files inside the `src/mastra` directory. The development server will automatically reload whenever you make changes.
+## What's next
 
-## Learn more
-
-To learn more about Mastra, visit our [documentation](https://mastra.ai/docs/). Your bootstrapped project includes example code for [agents](https://mastra.ai/docs/agents/overview), [tools](https://mastra.ai/docs/agents/using-tools), [workflows](https://mastra.ai/docs/workflows/overview), [scorers](https://mastra.ai/docs/evals/overview), and [observability](https://mastra.ai/docs/observability/overview).
-
-If you're new to AI agents, check out our [course](https://mastra.ai/learn) and [YouTube videos](https://youtube.com/@mastra-ai). You can also join our [Discord](https://discord.gg/BTYqqHKUrf) community to get help and share your projects.
-
-## Deploy to the Mastra platform
-
-The [Mastra platform](https://projects.mastra.ai) provides two products for deploying and managing AI applications built with the Mastra framework:
-
-- **Studio**: A hosted visual environment for testing agents, running workflows, and inspecting traces
-- **Server**: A production deployment target that runs your Mastra application as an API server
-
-Learn more in the [Mastra platform documentation](https://mastra.ai/docs/mastra-platform/overview).
+- Better frontend — right now it's a button and raw markdown
+- Trigger the full pipeline from the UI instead of manually running workflows

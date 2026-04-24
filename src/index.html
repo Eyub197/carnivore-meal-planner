@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carnivore meal planner</title>
+  </head>
+  <body>
+    <button type="button">Get meal plan</button>
+    <div id="meal-plan"></div>
+    <script>
+      const button = document.querySelector("button");
+      const mealPlanDiv = document.querySelector("#meal-plan");
+
+      button.addEventListener("click", async () => {
+        const response = await fetch("/meal-plan");
+        const mealPlan = await response.text();
+        mealPlanDiv.textContent = mealPlan;
+      });
+    </script>
+  </body>
+</html>
