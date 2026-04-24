@@ -28,6 +28,7 @@ I saw Mastra and something clicked — I had to build with it. This is the resul
 - Playwright behaves differently in headless vs headed mode — PDF downloads trigger a `download` event in headless, but open a new tab in headed
 - Passing file content directly in the prompt is far more reliable than letting the agent read files itself via tools
 - `Promise.all` isn't just for parallelism — registering an event listener before triggering the action that fires it is a real pattern
+- pre tag it preserves the whitespace and newlines formating of the text.
 
 ## Getting started
 
